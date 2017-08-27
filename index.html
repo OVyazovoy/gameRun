@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="scene" width="500" height="300"></canvas>
+
+<script>
+
+
+    var game = (function () {
+
+        var canvas = document.getElementById('scene');
+
+        var scene_height = canvas.height;
+        var scene_width = canvas.width;
+
+        var game_position_y = 5;
+        var game_position_x = 5;
+        var game_width = 4;
+        var game_height = 4;
+        var move_step = 3;
+        var ctx = canvas.getContext("2d");
+        var start_pos = 0;
+
+        function ifOnBottom() {
+            console.log(game_position_y);
+            if (game_position_y + game_height === scene_height) {
+                game_position_y = start_pos;
+            }
+        }
+
+        function ifOnTop() {
+            if (game_position_y < 0) {
+                game_position_y = scene_height - game_height
+            }
+        }
+
+        function ifOnLeft() {
+            if (game_position_x < 0) {
+                game_position_x = scene_width - game_width
+            }
+        }
+
+        function ifOnRight() {
+            if (game_position_x + game_width > scene_width) {
+                game_position_x = start_pos;
+            }
+        }
+
+        function checkPosition() {
+            ifOnBottom();
+            ifOnTop();
+            ifOnLeft();
+            ifOnRight();
+        }
+
+        function draw() {
+
+            if (canvas.getContext) {
+                ctx.fillRect(game_position_x, game_position_y, game_width, game_height);
+            }
+
+        }
+
+        function redraw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            draw();
+        }
+
+        function move_left() {
+            console.log('change pos left');
+            game_position_x -= move_step;
+            redraw();
+        }
+
+        function move_right() {
+            console.log('change pos right');
+
+            game_position_x += move_step;
+            redraw();
+
+        }
+
+        function move_top() {
+            console.log('move top');
+            console.log('move bottom');
+            game_position_y -= move_step;
+            redraw();
+        }
+
+        function move(action) {
+            checkPosition();
+            switch (action) {
+                case 'up':
+                    move_top();
+                    break;
+                case 'down':
+                    move_bottom();
+                    break;
+                case 'left':
+                    move_left();
+                    break;
+                case 'right':
+                    move_right();
+                    break;
+                default:
+                    return 0;
+            }
+            draw();
+        }
+
+        function move_bottom() {
+            console.log('move bottom');
+            game_position_y += move_step;
+            redraw();
+        }
+
+        return {
+            run: function () {
+                console.log('game started!');
+                draw();
+            },
+
+            draw: draw,
+            redraw: redraw,
+            move: move
+        }
+
+    })();
+
+    //    setInterval(game.redraw, 300);
+
+    document.addEventListener("DOMContentLoaded", game.run);
+    document.addEventListener("keydown", function (e) {
+        switch (e.which) {
+            case 37: // left
+                game.move('left');
+                break;
+
+            case 38: // up
+                game.move('up');
+                break;
+
+            case 39: // right
+                game.move('right');
+                break;
+
+            case 40: // down
+                game.move('down');
+                break;
+
+            default:
+                return; // exit this handler for other keys
+        }
+        e.preventDefault(); // prevent the default action (scroll / move caret)
+    });
+
+</script>
+</body>
+</html>
